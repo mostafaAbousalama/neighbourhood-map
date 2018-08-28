@@ -9,17 +9,19 @@ export default class TheMap extends Component {
     markers: [],
     infowindow: new this.props.google.maps.InfoWindow(),
     selectedIcon: null,
+    defaultIcon: null,
     fsError: "",
     mapError: ""
   }
 
   componentDidMount() {
 
-    fetch('https://api.foursquare.com/v2/venues/search?client_id=5NDJGWHYZ4AGS4PMS4532RXMHJRB322SBFJCKM5KYGAIYCUI&client_secret=FZMDM5LEDXCDTG1AX2KB35GE3CZ2NMOKWD304Y125QGQORMI&v=20180323&limit=7&ll=31.200100,29.918700&categoryId=4d4b7104d754a06370d81259')
+    fetch('https://api.foursquare.com/v2/venues/search?client_id=5NDJGWHYZ4AGS4PMS4532RXMHJRB322SBFJCKM5KYGAIYCUI&client_secret=FZMDM5LEDXCDTG1AX2KB35GE3CZ2NMOKWD304Y125QGQORMI&v=20180323&limit=10&ll=31.200100,29.918700&categoryId=4d4b7104d754a06370d81259')
       .then( res => res.json() )
       .then( data => {
         this.setState({locations: data.response.venues})
         this.loadMap();
+        this.locationClickedFromListView()
       })
       .catch( err => { this.setState({fsError: err.toString()}) })
 
@@ -65,28 +67,29 @@ export default class TheMap extends Component {
       marker.addListener('click', () => {
         this.populateInfoWindow(marker, infowindow, locations[ind])
       })
+
       this.setState( state => ({
         markers: [...state.markers, marker]
       }))
 
       bounds.extend(marker.position)
-      })
-
-
+    })
+    let defaultIcon = this.state.markers[0].getIcon();
+    this.setState({defaultIcon})
     this.map.fitBounds(bounds)
+
   }
 
 
     populateInfoWindow = (marker, infowindow, location) => {
 
       const {markers, selectedIcon} = this.state
-      const {google} = this.props
 
       const defaultIcon = marker.getIcon()
 
       if (infowindow.marker !== marker) {
         if (infowindow.marker) {
-          const index = markers.findIndex(m => m.title === infowindow.marker.title)
+          const index = markers.findIndex(mrkr => mrkr.title === infowindow.marker.title)
           markers[index].setIcon(defaultIcon)
         }
         marker.setIcon(selectedIcon)
@@ -120,15 +123,68 @@ export default class TheMap extends Component {
     return markerImage;
   }
 
+  changeQueryState = (event) => {
+    this.setState({query: event.target.value})
+  }
+
+  handleLocationLinkClick = (event) => {
+    const {locations, markers, infowindow} = this.state
+
+    const index = markers.findIndex(m =>
+      m.title.toLowerCase() === event.target.innerText.toLowerCase()
+    )
+    this.populateInfoWindow(markers[index], infowindow, locations[index])
+
+  }
+
+  handleLocationLinkKeyPress = (event) => {
+    const {locations, markers, infowindow} = this.state
+    if (event.keyCode === 13) {
+
+      const index = markers.findIndex(m =>
+        m.title.toLowerCase() === event.target.innerText.toLowerCase()
+      )
+      this.populateInfoWindow(markers[index], infowindow, locations[index])
+    }
+  }
+
   render() {
+
+    const {query, locations, markers, infowindow, defaultIcon} = this.state
+
+    if (query) {
+      locations.forEach( (l,ind) => {
+        if (l.name.toLowerCase().includes(query.toLowerCase())) {
+          markers[ind].setVisible(true)
+        } else {
+          if (infowindow.marker === markers[ind]) {
+            infowindow.close()
+          }
+          markers[ind].setIcon(defaultIcon)
+          markers[ind].setVisible(false)
+        }
+      })
+    } else {
+      locations.forEach( (l, ind) => {
+        if (markers[ind]) {
+          markers[ind].setVisible(true);
+        }
+      })
+    }
 
     return (
       <main className="main-container">
         <aside className="side-bar">
-
+            <input role="search" type='text' value={this.state.query} onChange={this.changeQueryState} placeholder="Search Locations"/>
+            <div>
+              <ul className="locations-list">{
+                markers.filter(m => m.getVisible()).map((m, i) =>
+                  (<li role="link" onClick={this.handleLocationLinkClick} onKeyDown={this.handleLocationLinkKeyPress} key={i} tabIndex="0">{m.title}</li>))
+              }</ul>
+            </div>
         </aside>
         <div className="map-container">
-          <div ref='map' className="the-map">
+          <div ref='map' className="the-map" role="application">
             Loading map...
           </div>
         </div>

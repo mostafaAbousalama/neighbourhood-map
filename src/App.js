@@ -5,16 +5,14 @@ import TheMap from "./TheMap.js";
 
 export class App extends Component {
 
-  state = {
-    placesFromFsAPI: [],
-    FsAPIerrorMessage: ""
-  };
+  toggleHiddenView = (event) => {
+    document.querySelector('.side-bar').classList.toggle("side-bar-hide")
+  }
 
-  componentDidMount() {
-    fetch('https://api.foursquare.com/v2/venues/search?client_id=5NDJGWHYZ4AGS4PMS4532RXMHJRB322SBFJCKM5KYGAIYCUI&client_secret=FZMDM5LEDXCDTG1AX2KB35GE3CZ2NMOKWD304Y125QGQORMI&v=20180323&limit=7&ll=31.200100,29.918700&categoryId=4d4b7104d754a06370d81259')
-    .then( res => res.json() )
-    .then( data => { this.setState( { placesFromFsAPI: data.response.venues } ) } )
-    .catch( err => { this.setState( { FsAPIerrorMessage: err.toString() } ) } )
+  toggleHiddenViewKeyPress = (event) => {
+    if (event.keyCode === 13) {
+      document.querySelector('.side-bar').classList.toggle("side-bar-hide")
+    }
   }
 
   render() {
@@ -22,6 +20,8 @@ export class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
+          <div className="burger-menu" tabIndex="0" onClick={this.toggleHiddenView}
+          onKeyDown={this.toggleHiddenViewKeyPress}>&#9776;</div>
           <h1 className="App-title">Neighbourhood Map App using React, Google Maps API and Foursquare API</h1>
         </header>
         <TheMap google={this.props.google}/>

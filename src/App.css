@@ -26,18 +26,27 @@
   to { transform: rotate(360deg); }
 }
 
+.burger-menu {
+  font-size: 37px;
+  float: left;
+  cursor: pointer;
+}
+
 .main-container {
   display: flex;
   flex-wrap: wrap;
 }
 
 .side-bar {
-  width: 30%;
+  width: 25%;
   height: 100vh;
+  background-color: #222;
+  color: white;
+  padding: 0 10px;
 }
 
 .map-container {
-  width: 70%;
+  width: calc(100% - (25% + 20px));
   height: 100vh;
   margin: 0;
 }
@@ -45,4 +54,42 @@
 .the-map {
   width: 100%;
   height: 100vh;
+}
+
+.side-bar input {
+  width: 90%;
+  padding: 10px 0;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.locations-list {
+  padding: 0;
+}
+
+.locations-list li {
+  padding: 15px 0;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 750px) {
+  .map-container {
+    width: 100%
+  }
+
+  .side-bar-hide {
+    display: none;
+  }
+
+  .side-bar {
+    z-index: 3;
+    width: 300px;
+    position: absolute;
+  }
+}
+
+@media screen and (max-width: 525px) {
+  .App-title {
+    font-size: 1.3em;
+  }
 }
