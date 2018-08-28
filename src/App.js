@@ -5,6 +5,7 @@ import TheMap from "./TheMap.js";
 
 export class App extends Component {
 
+  //  Toggle the sidebar when the hamburger menu is clicked or enter is pressed while focused
   toggleHiddenView = (event) => {
     document.querySelector('.side-bar').classList.toggle("side-bar-hide")
   }

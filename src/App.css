@@ -72,6 +72,12 @@
   cursor: pointer;
 }
 
+.error-msg {
+  border: 5px solid black;
+  color: white;
+  background-color: red;
+}
+
 @media screen and (max-width: 750px) {
   .map-container {
     width: 100%
