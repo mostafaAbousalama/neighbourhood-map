@@ -202,7 +202,8 @@ export default class TheMap extends Component {
         ) : (
           <main className="main-container">
             <aside className="side-bar">
-                <input role="search" type='text' value={this.state.query} onChange={this.changeQueryState} placeholder="Search Locations"/>
+                <input id="srch" role="search" type='text' value={this.state.query} onChange={this.changeQueryState} placeholder="Search Locations"/>
+                <label htmlFor="srch">Search Box</label>
                 <div>
                   <ul className="locations-list">{
                     //  loop through the markers and display on the locations list only those whose visible property is true.
